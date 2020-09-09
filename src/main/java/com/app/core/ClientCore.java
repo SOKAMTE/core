@@ -14,6 +14,8 @@ import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import java.util.Optional;  
 import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -66,5 +69,18 @@ public class ClientCore {
     @DeleteMapping("/clients/deleteclient/{id}")
     public void deleteClient(@RequestBody @PathVariable Long id){
             clientdao.deleteById(id);
+    }
+    
+    @RequestMapping(value = "/updateClient/{id}", method=RequestMethod.PUT)
+    public Client updateClient(@PathVariable Long id, @RequestBody Client c){
+        c.setIdclient(id);
+        return clientdao.save(c);
+    }
+    
+    @GetMapping(value = "/searchClient")
+    public Page<Client> searchClient(@RequestParam(name="cClt", defaultValue = "") String cClt, 
+            @RequestParam(name="page", defaultValue = "0") int page, 
+            @RequestParam(name="size", defaultValue = "5") int size){
+        return clientdao.searchClient("%"+cClt+"%", PageRequest.of(page, size));
     }
 }
